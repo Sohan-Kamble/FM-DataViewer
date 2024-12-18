@@ -1,6 +1,5 @@
 import mysql from 'mysql2/promise';
 
-// Create a connection pool
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -8,7 +7,7 @@ const pool = mysql.createPool({
   database: process.env.DB_NAME,
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
+  queueLimit: 0,
 });
 
 export default async function handler(req, res) {
@@ -18,26 +17,31 @@ export default async function handler(req, res) {
       return res.status(405).end(`Method ${req.method} Not Allowed`);
     }
 
-    const tableName = req.query.table; // Get table name from query
+    const tableName = req.query.table;
+    const limit = parseInt(req.query.limit) || 100; // Default batch size: 100 rows
+    const offset = parseInt(req.query.offset) || 0; // Offset for pagination
 
     if (!tableName) {
-      console.error('No table name provided in the query.');
       return res.status(400).json({ error: 'Table name is required.' });
     }
 
-    console.log(`Fetching data for table: ${tableName}`);
+    // Fetch the data with LIMIT and OFFSET
+    const [rows] = await pool.query(`SELECT * FROM ?? LIMIT ? OFFSET ?`, [
+      tableName,
+      limit,
+      offset,
+    ]);
 
-    // Fetch all data from the table (without LIMIT)
-    const [rows] = await pool.query(`SELECT * FROM ??`, [tableName]);
+    // Check if there is more data available
+    const [totalRows] = await pool.query(`SELECT COUNT(*) AS count FROM ??`, [tableName]);
+    const totalCount = totalRows[0].count;
+    const hasMore = offset + limit < totalCount;
 
-    console.log(`Data fetched from table "${tableName}":`, rows);
-
-    if (rows.length === 0) {
-      console.error(`No data found in table: ${tableName}`);
-      return res.status(200).json({ message: 'No data available for this table.' });
-    }
-
-    return res.status(200).json({ data: rows });
+    return res.status(200).json({
+      data: rows,
+      hasMore, // Whether there is more data to fetch
+      totalCount, // Total rows in the table
+    });
   } catch (error) {
     console.error('Error fetching data:', error.message);
     return res.status(500).json({ error: 'Failed to fetch data from the database.' });
