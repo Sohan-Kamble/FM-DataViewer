@@ -1,0 +1,63 @@
+/* Sidebar Container */
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #1e293b; /* Dark blue-gray background */
+    color: #fff; /* White text */
+    padding: 20px;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Sidebar Header */
+  .sidebar-header {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+    border-bottom: 2px solid #475569;
+    padding-bottom: 10px;
+  }
+  
+  /* Table List Container */
+  .sidebar-tables {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  /* Individual Table Item */
+  .sidebar-tables li {
+    padding: 10px;
+    margin: 5px 0;
+    background-color: #334155; /* Slightly lighter background for items */
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s ease;
+  }
+  
+  .sidebar-tables li:hover {
+    background-color: #475569; /* Highlight on hover */
+  }
+  
+  /* Active/Selected Table */
+  .sidebar-tables .active {
+    background-color: #0ea5e9; /* Sky blue for selected table */
+    color: #fff;
+  }
+  
+  /* Main Content Styling */
+  .main-content {
+    margin-left: 250px; /* Push content right to accommodate sidebar */
+    padding: 20px;
+    background-color: #f8fafc;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  
